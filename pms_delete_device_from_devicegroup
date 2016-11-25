@@ -1,0 +1,32 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DBNAME=devicemgr_v2m0
+
+if [ $# -lt 2 ]; then
+        echo "Give me groupname and Device HW SerialNumber." >&2
+	echo "$0 groupname HWSerialNumber"
+        exit 1
+fi
+
+GROUP="$1"
+DEVICE="$2"
+
+GID=`./pms_get_devicegroup_id  "$GROUP"`
+if [ X${GID} = X ] ; then
+	echo "No group found: $GROUP" >&2 
+	exit 1
+fi
+
+DID=`./pms_get_device_id $DEVICE`
+if [ X${DID} = X ] ; then
+	echo "No Device of HardwareSerial found: $Device" >&2 
+	exit 1
+fi
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME  \
+ -c "delete from device_groups_devices where device_group_id = ${GID} AND device_id = ${DID} ;"
+
+exit $?

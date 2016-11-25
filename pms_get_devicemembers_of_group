@@ -1,0 +1,36 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DBNAME=devicemgr_v2m0 
+
+WID=`uuidgen`
+TMPFILE="/tmp/${WID}"
+
+if [ $# -eq 0 ] ; then
+	echo "Give me Groupname" >&2
+	exit 1
+else
+	GROUPNAME="$1"
+fi
+
+cd "`dirname $0`"
+GID=`./pms_get_devicegroup_id "$GROUPNAME"`
+if [ "X${GID}" = X ]; then
+	echo "No Group found: $GROUPNAME" >&2
+	exit 1
+fi
+
+sudo  "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
+ -c "select device_group_id,device_id from device_groups_devices where device_group_id = $GID order by device_id;" > ${TMPFILE}-1
+grep -v device_id ${TMPFILE}-1 | grep -v rows | grep -v + |awk NF  > ${TMPFILE}-2
+./pms_get_devicelist  > ${TMPFILE}-1
+
+for did in `awk '{print $3}'  ${TMPFILE}-2`
+do
+	L=`awk '$1 = $1' ${TMPFILE}-1 | awk '-F|' -v n=$did '$1 == n" " {print $1","$2","$3}' | sed s/' , '/,/g`
+	echo "$L,$GROUPNAME"
+done
+
+rm ${TMPFILE}-1 ${TMPFILE}-2

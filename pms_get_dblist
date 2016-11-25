@@ -1,0 +1,7 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" --list

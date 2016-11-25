@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ `whoami` != root ]; then exit 1; fi
+
+serveradmin stop devicemgr
+sleep 10
+for i in `launchctl list | grep Device | awk '{print $NF}'`
+do
+    launchctl stop $i
+    sleep 1
+    launchctl start $i
+done
+
+sleep 5
+launchctl list | grep Device 
+
+sleep 5
+serveradmin start devicemgr

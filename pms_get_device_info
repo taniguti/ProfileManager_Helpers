@@ -1,0 +1,9 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DBNAME=devicemgr_v2m0 
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
+ -c "select id,\"DeviceName\",\"SerialNumber\",\"OSVersion\",\"ProductName\" from devices order by \"OSVersion\" ; "

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DBNAME=devicemgr_v2m0 
+
+if [ $# -eq 0 ]; then 
+	echo "Give me Device HW SerialNumber." >&2
+	exit 1 
+else
+	HWSERIAL="$1"
+fi
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
+ -c "select \"DeviceName\" from devices where \"SerialNumber\" = '$HWSERIAL' ;" | awk 'NR == 3 ' |awk '$1 = $1' | grep -v '(0 rows)'

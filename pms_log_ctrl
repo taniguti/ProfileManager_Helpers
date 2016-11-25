@@ -1,0 +1,22 @@
+#!/bin/sh
+# https://support.apple.com/en-us/HT201063
+
+SW=$1
+
+if [ ${SW:-X} = ON ]; then
+        sudo defaults write /Library/Preferences/com.apple.apsd APSWriteLogs -bool TRUE
+        sudo defaults write /Library/Preferences/com.apple.apsd APSLogLevel -int 7
+        sudo killall apsd
+        sudo defaults write /Library/Preferences/com.apple.ProfileManager debugOutput 3
+        sudo killall -u _devicemgr
+        echo "see /Library/Logs/apsd.log and devicemgr logs"
+elif [ ${SW:-X} = OFF ]; then
+        sudo defaults write /Library/Preferences/com.apple.apsd APSWriteLogs -bool FALSE
+        sudo defaults delete /Library/Preferences/com.apple.apsd APSLogLevel 
+        sudo killall apsd
+        sudo defaults delete /Library/Preferences/com.apple.ProfileManager debugOutput 
+        sudo killall -u _devicemgr
+else
+        echo "$0 ON|OFF"
+fi
+

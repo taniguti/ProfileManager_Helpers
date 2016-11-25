@@ -1,0 +1,13 @@
+#!/bin/sh
+
+
+IAM=`whoami`
+if [ $IAM != "root" ]; then
+	echo "use me with sudo"
+	exit 0
+fi
+
+APSPD_NUM=`/usr/sbin/lsof -i:2195 | awk '$1 == "apspd" ' | wc -l | tr -d [:blank:]`
+APSD_NUM=`/usr/sbin/lsof -i:443 | awk '$1 == "apsd" ' | wc -l | tr -d [:blank:]`
+
+echo "apspd: $APSPD_NUM apsd: $APSD_NUM"

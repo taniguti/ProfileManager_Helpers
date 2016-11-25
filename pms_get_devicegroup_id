@@ -1,0 +1,23 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DBNAME=devicemgr_v2m0 
+
+WID=`uuidgen`
+TMPFILE=/tmp/$WID
+
+if [ $# -eq 0 ]; then 
+	echo "Give me Device GroupName" >&2
+	exit 1 
+else
+	GROUPNAME="$1"
+fi
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
+ -c 'select id,name from device_groups  ;' > ${TMPFILE}-1
+
+awk '-F|' -v G="$GROUPNAME" '$2 == " "G { print $1}'  ${TMPFILE}-1  | awk '$1 = $1'
+
+rm  ${TMPFILE}-1

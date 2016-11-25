@@ -1,0 +1,10 @@
+#!/bin/sh
+
+PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DBNAME=devicemgr_v2m0 
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
+ -c "select id,name from device_groups order by id;"
+

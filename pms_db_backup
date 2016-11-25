@@ -1,0 +1,15 @@
+#!/bin/sh
+
+DBNAME=devicemgr_v2m0 
+PGDUMP="/Applications/Server.app/Contents/ServerRoot/usr/bin/pg_dump"
+DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
+DBUSER=_devicemgr
+DUMPDIR=$1
+
+if [ "${DUMPDIR}"X = X ]; then DUMPDIR=/var/tmp/ ;fi
+if [ ! -d "${DUMPDIR}" ]; then DUMPDIR=/var/tmp/ ;fi
+
+DUMPFILE="${DUMPDIR}/${DBNAME}_pg_dump_`date +%Y%m%d-%H%M%S`"
+
+sudo $PGDUMP -U $DBUSER -h "$DBHOST" "$DBNAME" | gzip > "${DUMPFILE}.gz"
+ls -l "${DUMPFILE}.gz"
