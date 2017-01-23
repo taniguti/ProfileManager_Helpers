@@ -1,0 +1,48 @@
+#!/bin/sh
+
+MYNAME=`basename $0`
+MYDIR=`dirname $0`
+KEY="exited with code 255"
+PHPFPMLOG=/var/log/devicemgr/php-fpm.log 
+FLAG=/var/tmp/$MYNAME
+WORKLOG=/tmp/${MYNAME}.log
+RESTARTER="${MYDIR}/pms_full_restart"
+
+IAM=`whoami`
+if [ $IAM != "root" ]; then
+        echo "use me with sudo"
+        exit 0
+fi
+
+current=`tail -3 "$PHPFPMLOG" | grep "$KEY" | tail -1 | tr -d ']' | awk '{print $2}'`
+if [ "${current}X" = X ]; then
+    echo "`date`: working good." >> "$WORKLOG"
+    if [ -e "$FLAG" ] ;then rm -rf "$FLAG" ;fi
+    exit 0
+fi
+
+if [ -f $FLAG ]; then
+    previous=`cat $FLAG`
+    echo "`date`: current: $current // previous: $previous" >> "$WORKLOG"
+    if [ "$current" = "$previous" ]; then
+        DoRestart=no
+    else
+        DoRestart=yes
+    fi
+else
+    echo $current > $FLAG
+    echo "`date`: current: $current" >> "$WORKLOG"
+    DoRestart=no
+fi
+echo "`date`: DoRestart: $DoRestart" >> "$WORKLOG"
+
+if [ $DoRestart = yes ]; then
+    if [ -x "$RESTARTER" ]; then
+        "$RESTARTER" >> "$WORKLOG" 2>&1
+        rm -f $FLAG
+        mv "$WORKLOG" "${WORKLOG}.previous"
+    else
+	echo "Not found $RESTARTER" >> "$WORKLOG"
+	exit 1
+    fi
+fi
