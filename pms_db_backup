@@ -8,10 +8,11 @@ else
     exit 1
 fi
 
+PGDUMP="/Applications/Server.app/Contents/ServerRoot/usr/bin/pg_dump"
 DUMPDIR=$1
 
-if [ "${DUMPDIR}"X = X ]; then DUMPDIR=/var/tmp/ ;fi
-if [ ! -d "${DUMPDIR}" ]; then DUMPDIR=/var/tmp/ ;fi
+if [ "${DUMPDIR}"X = X ]; then DUMPDIR=/var/tmp ;fi
+if [ ! -d "${DUMPDIR}" ]; then DUMPDIR=/var/tmp ;fi
 
 DUMPFILE="${DUMPDIR}/${DBNAME}_pg_dump_`date +%Y%m%d-%H%M%S`"
 
