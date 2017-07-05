@@ -28,9 +28,9 @@ cat "${TMPFILE}.order" | tr \\r \\n | sort | uniq | while read LINE
 do
 	DEVICENAME=`echo "$LINE" | awk -F, '{print $1}' `
 	HWSERIAL=`  echo "$LINE" | tr [:lower:] [:upper:] | awk -F, '{print $2}' | tr -d [:blank:]`
-	GROUPNAME=` echo "$LINE" | tr [:lower:] [:upper:] | awk -F, '{print $3}' | tr -d [:blank:]`
+	GROUPNAME="` echo "$LINE" | awk -F, '{print $3}'`"
 	if [ ${HWSERIAL}X = X ]  ; then continue ; fi
-	if [ ${GROUPNAME}X = X ] ; then continue ; fi
+	if [ "${GROUPNAME}X" = X ] ; then continue ; fi
 	DN=`./pms_get_device_name $HWSERIAL`
 	if [ ${DN}X = X ]; then
 		echo "[`date +%D-%H:%M:%S`] [SKIPPED] $DEVICENAME is not yet enrolled." >> "$LOGFILE"
@@ -39,12 +39,12 @@ do
 		DEVICENAME="$DN"
 	fi
 		
-	if [ `./pms_get_devicemembers_of_group ${GROUPNAME} | awk -F, -v HW="$HWSERIAL" '$3 == HW' | wc -l` -ne 0 ]; then 
+	if [ `./pms_get_devicemembers_of_group "${GROUPNAME}" | awk -F, -v HW="$HWSERIAL" '$3 == HW' | wc -l` -ne 0 ]; then
 		echo "[`date +%D-%H:%M:%S`] [INFO] $DEVICENAME is already member of ${GROUPNAME}. Nothing to do for it." >> "$LOGFILE"
 		continue
 	fi
 	
- 	./pms_add_device_to_devicegroup $GROUPNAME $HWSERIAL 2> ${TMPFILE}-err	
+    ./pms_add_device_to_devicegroup "$GROUPNAME" $HWSERIAL 2> ${TMPFILE}-err
 	if [ $? -eq 0 ]; then
 		echo "[`date +%D-%H:%M:%S`] [SUCCESS] $HWSERIAL ($DEVICENAME) added into ${GROUPNAME}." >> "$LOGFILE"
 	else
