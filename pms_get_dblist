@@ -7,9 +7,5 @@ else
     echo "no pms_tool.conf."
     exit 1
 fi
-PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
-DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
-DBUSER=devicemgrd
-
 
 sudo "$PSQL" -U $DBUSER -h "$DBHOST" --list
