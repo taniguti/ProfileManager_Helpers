@@ -1,9 +1,14 @@
 #!/bin/sh
 
-PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
-DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
-DBUSER=_devicemgr
-DBNAME=devicemgr_v2m0 
+SCRIPT_DIR=`dirname $0`
+if [ -f "${SCRIPT_DIR}/pms_tool.conf" ]; then
+    . "${SCRIPT_DIR}/pms_tool.conf"
+else
+    echo "no pms_tool.conf."
+    exit 1
+fi
 
 sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
- -c "select id,\"DeviceName\",\"SerialNumber\",\"OSVersion\",\"ProductName\" from devices order by \"OSVersion\" ; "
+-c "select id,\"DeviceName\",\"SerialNumber\",\"OSVersion\",\"ProductName\",\"last_checkin_time\" from devices order by \"OSVersion\" ; "
+
+# id | admin_temp_id | created_at | updated_at | library_item_type | order_name | mdm_target_type | user_id | last_checkin_time | last_push_time | first_push_time | last_update_info_time | last_auto_sync_profiles | last_auto_sync_media | processing_tasks | hp_singleton_tasks | lp_singleton_tasks | nn_singleton_tasks | singleton_task_type | singleton_uuid | supported_device_type | token | push_magic | push_avg_response_time | push_response_times | pending_checkin_token | checkin_token_valid_at | active_checkin_token | DeviceName | ProductName | OSVersion | SerialNumber | udid | identifier | is_dep_device | pending_user_id | vpp_last_invite_requested | vpp_last_invite_delivered | mdm_acl | IMEI | MEID | IsSupervised | BluetoothMAC | EthernetMAC | WiFiMAC | DeviceID | airplay_password | color | assigned_dep_profile_uuid | dep_profile_uuid | dep_profile | activation_lock_bypass_code | last_mdm_refresh_ttl_days | supported_asset_types | updated_at_xid | is_multi_user | mdm_activation_lock_bypass_code

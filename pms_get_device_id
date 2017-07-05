@@ -1,9 +1,12 @@
 #!/bin/sh
 
-PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
-DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
-DBUSER=_devicemgr
-DBNAME=devicemgr_v2m0 
+SCRIPT_DIR=`dirname $0`
+if [ -f "${SCRIPT_DIR}/pms_tool.conf" ]; then
+    . "${SCRIPT_DIR}/pms_tool.conf"
+else
+    echo "no pms_tool.conf."
+    exit 1
+fi
 
 if [ $# -eq 0 ]; then 
 	echo "Give me Device HW SerialNumber." >&2
