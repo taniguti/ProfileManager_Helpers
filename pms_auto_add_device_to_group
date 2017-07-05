@@ -18,11 +18,13 @@ fi
 # restart apsd: This makes service wrong.
 # killall apsd; sleep 15
 
+if [ -f "$1" ]; then ORDERFILE="$1"; fi
 if [ ! -f "$ORDERFILE" ]; then exit 0 ; fi
 cd `dirname "$0"`
 
 mkdir ${TMPDIR}
-mv "$ORDERFILE" "${TMPFILE}.order"
+cp "$ORDERFILE" "${TMPFILE}.order"
+if [ $? -ne 0 ]; then exit 1 ; fi
 
 cat "${TMPFILE}.order" | tr \\r \\n | sort | uniq | while read LINE
 do
