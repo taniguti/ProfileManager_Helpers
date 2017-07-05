@@ -2,7 +2,7 @@
 
 PSQL="/Applications/Server.app/Contents/ServerRoot/usr/bin/psql"
 DBHOST="/Library/Server/ProfileManager/Config/var/PostgreSQL"
-DBUSER=_devicemgr
+DBUSER=devicemgrd
 DBNAME=devicemgr_v2m0 
 
 sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME \
