@@ -4,8 +4,10 @@ SCRIPT_DIR=`dirname $0`
 if [ -f "${SCRIPT_DIR}/pms_tool.conf" ]; then
     . "${SCRIPT_DIR}/pms_tool.conf"
 else
-    echo "no pms_tool.conf."
+echo "no pms_tool.conf."
     exit 1
 fi
 
-sudo "$PSQL" -U $DBUSER -h "$DBHOST" --list
+cd /tmp
+sudo $SUDO_OPT "$PSQL" -U $DB_FILE_OWNER -h "$DBHOST" --list
+cd - > /dev/null 2>&1
