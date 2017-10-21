@@ -8,6 +8,7 @@ fi
 
 MYNAME=`basename $0`
 MYDIR=`dirname $0`
+
 # [01-Feb-2017 14:37:04] WARNING: [pool devicemgr] server reached pm.max_children setting (50), consider raising it
 KEY="exited with code 255"
 PHPFPMLOG=/var/log/devicemgr/php-fpm.log 
