@@ -89,7 +89,7 @@ $ ./pms_get_dblist
 - pms_get_tablelist
 
     Show list of tables in databse "devicemgr_v2m0".
-    ```
+```
     $ ./pms_get_tablelist
                                      List of relations
  Schema |                       Name                       |       Type        |   Owner    
@@ -162,4 +162,4 @@ $ ./pms_get_dblist
  public | enterprise_apps                                  | table             | _devicemgr
  public | installed_applications                           |
  :
-    ```
+```
