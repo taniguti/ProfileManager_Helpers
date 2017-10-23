@@ -62,7 +62,7 @@ mac02,HW1234568MAC,DEVGROUP02
     $ ./pms_db_backup
 -rw-r--r--  1 ladmin  wheel  1101755 Oct 24 01:20 /var/tmp/devicemgr_v2m0_pg_dump_20171024-012013.gz
     $
-```
+    ```
 
 - pms_get_dblist
 
@@ -84,7 +84,7 @@ mac02,HW1234568MAC,DEVGROUP02
  template1      | _devicemgr | UTF8     | C       | C     | =c/_devicemgr              +
                 |            |          |         |       | _devicemgr=CTc/_devicemgr
 (4 rows)
-```
+    ```
 
 - pms_get_tablelist
 
