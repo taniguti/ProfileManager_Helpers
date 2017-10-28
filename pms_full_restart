@@ -4,7 +4,7 @@ if [ `whoami` != root ]; then exit 1; fi
 
 /Applications/Server.app/Contents/ServerRoot/usr/sbin/serveradmin stop devicemgr
 sleep 10
-for i in `launchctl list | grep Device | awk '{print $NF}'`
+for i in `launchctl list | grep Device | sort -n | awk '{print $NF}'`
 do
     launchctl stop $i
     sleep 1
@@ -12,7 +12,8 @@ do
 done
 
 sleep 5
-launchctl list | grep Device 
+/Applications/Server.app/Contents/ServerRoot/usr/sbin/serveradmin start devicemgr
 
 sleep 5
-/Applications/Server.app/Contents/ServerRoot/usr/sbin/serveradmin start devicemgr
+launchctl list | grep Device  | sort -n
+
