@@ -1,55 +1,59 @@
 #!/bin/sh
 
-macOSver=`sw_vers -productVersion | awk -F. '{print $2}'`
-if [ ${macOSver:-13} -ge 13 ]; then
-    echo "Not support macOS 10.13 High Sierra or later" >&2
-    exit 1
-fi
-
-MYNAME=`basename $0`
-MYDIR=`dirname $0`
-# [01-Feb-2017 14:37:04] WARNING: [pool devicemgr] server reached pm.max_children setting (50), consider raising it
-KEY="exited with code 255"
-PHPFPMLOG=/var/log/devicemgr/php-fpm.log 
-FLAG=/var/tmp/$MYNAME
-WORKLOG=/tmp/${MYNAME}.log
-RESTARTER="${MYDIR}/pms_full_restart"
-
 IAM=`whoami`
 if [ $IAM != "root" ]; then
         echo "use me with sudo"
         exit 0
 fi
 
-current=`tail -3 "$PHPFPMLOG" | grep "$KEY" | tail -1 | tr -d ']' | awk '{print $2}'`
-if [ "${current}X" = X ]; then
-    echo "`date`: working good." >> "$WORKLOG"
-    if [ -e "$FLAG" ] ;then rm -rf "$FLAG" ;fi
-    exit 0
-fi
+macOSver=`sw_vers -productVersion | awk -F. '{print $2}'`
+MYNAME=`basename $0`
+MYDIR=`dirname $0`
 
-if [ -f $FLAG ]; then
-    previous=`cat $FLAG`
-    echo "`date`: current: $current // previous: $previous" >> "$WORKLOG"
-    if [ "$current" = "$previous" ]; then
+case $macOSver in
+12)
+    # [01-Feb-2017 14:37:04] WARNING: [pool devicemgr] server reached pm.max_children setting (50), consider raising it
+    KEY="exited with code 255"
+    PHPFPMLOG=/var/log/devicemgr/php-fpm.log
+    FLAG=/var/tmp/$MYNAME
+    WORKLOG=/tmp/${MYNAME}.log
+    RESTARTER="${MYDIR}/pms_full_restart"
+
+    current=`tail -3 "$PHPFPMLOG" | grep "$KEY" | tail -1 | tr -d ']' | awk '{print $2}'`
+    if [ "${current}X" = X ]; then
+        echo "`date`: working good." >> "$WORKLOG"
+        if [ -e "$FLAG" ] ;then rm -rf "$FLAG" ;fi
+        exit 0
+    fi
+
+    if [ -f $FLAG ]; then
+        previous=`cat $FLAG`
+        echo "`date`: current: $current // previous: $previous" >> "$WORKLOG"
+        if [ "$current" = "$previous" ]; then
+            DoRestart=no
+        else
+            DoRestart=yes
+        fi
+    else
+        echo $current > $FLAG
+        echo "`date`: current: $current" >> "$WORKLOG"
         DoRestart=no
-    else
-        DoRestart=yes
     fi
-else
-    echo $current > $FLAG
-    echo "`date`: current: $current" >> "$WORKLOG"
-    DoRestart=no
-fi
-echo "`date`: DoRestart: $DoRestart" >> "$WORKLOG"
+    echo "`date`: DoRestart: $DoRestart" >> "$WORKLOG"
 
-if [ $DoRestart = yes ]; then
-    if [ -x "$RESTARTER" ]; then
-        "$RESTARTER" >> "$WORKLOG" 2>&1
-        rm -f $FLAG
-        mv "$WORKLOG" "${WORKLOG}.previous"
-    else
-	echo "Not found $RESTARTER" >> "$WORKLOG"
-	exit 1
+    if [ $DoRestart = yes ]; then
+        if [ -x "$RESTARTER" ]; then
+            "$RESTARTER" >> "$WORKLOG" 2>&1
+            rm -f $FLAG
+            mv "$WORKLOG" "${WORKLOG}.previous"
+        else
+	        echo "Not found $RESTARTER" >> "$WORKLOG"
+	        exit 1
+        fi
     fi
-fi
+    ;;
+*)
+    echo "This script is not support macOS 10.${macOSver} serise. Sorry." >&2
+    exit 1
+    ;;
+esac

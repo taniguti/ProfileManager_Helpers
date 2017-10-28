@@ -8,4 +8,6 @@ else
     exit 1
 fi
 
-sudo "$PSQL" -U $DBUSER -h "$DBHOST" --list
+cd /tmp
+sudo $SUDO_OPT "$PSQL" -U $DB_FILE_OWNER -h "$DBHOST" --list
+cd - > /dev/null 2>&1
