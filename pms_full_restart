@@ -16,4 +16,3 @@ sleep 5
 
 sleep 5
 launchctl list | grep Device  | sort -n
-
