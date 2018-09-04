@@ -1,0 +1,64 @@
+#!/bin/bash
+#-
+#- Usage
+#- pms_set_debugmode [-h] [-l [0-9]] -D -L -H
+#-
+#- -h       Show this message.
+#- -l [0-9] Set debug verbose level, from 0 to 9.
+#- -D       Set debug verbose level as default, 1.
+#- -L       Set debug verbose level as default, 0.
+#- -H       Set debug verbose level as default, 9.
+#-
+
+while getopts l:LHDh sw
+do
+    case $sw in
+    l )
+        n=${OPTARG}
+        ;;
+    D )
+        n=1
+        ;;
+    L )
+        n=0
+        ;;
+    H )
+        n=9
+        ;;
+    * )
+        grep '^#-' "$0" | cut -c 4-
+        exit 0
+        ;;
+    esac
+done
+
+expr ${n:=1} + 1 > /dev/null 2>&1
+if [ $? -eq 2 ]; then
+    echo "Invalid argment. Set debug level as default: 1"
+    n=1
+fi
+if [ $n -gt 9 ]; then
+    echo "debug level must be between 0 and 9. Set debug leve 9"
+    level=9
+fi
+if [ $n -lt 0 ]; then
+    echo "debug level must be between 0 and 9. Set debug leve 0"
+    level=0
+fi
+
+echo "Set debug level to $n. (Default:1, lowest:0, highest:9)"
+echo "In practice, levels higher than 3 are usually overkill."
+echo "Using this tool requires the Profile Manager service be turned off briefly."
+/bin/echo -n "Are you sure execute it? [y/n]: "
+read ans
+case `echo $ans | tr [:upper:] [:lower:]` in
+    y|yes|ok )
+        : go ahead
+        ;;
+    * )
+        exit 0
+        ;;
+esac
+
+if [ `whoami` != root ]; then doSUDO='sudo' ; fi
+$doSUDO debugDeviceMgr $n
