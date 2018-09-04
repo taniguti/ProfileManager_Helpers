@@ -1,0 +1,16 @@
+#!/bin/sh
+
+SCRIPT_DIR=`dirname $0`
+if [ -f "${SCRIPT_DIR}/pms_tool.conf" ]; then
+    . "${SCRIPT_DIR}/pms_tool.conf"
+else
+    echo "no pms_tool.conf."
+    exit 1
+fi
+
+if [ $# -eq 0 ]; then
+    echo "No sql command"
+    exit 1
+fi
+
+sudo "$PSQL" -U $DBUSER -h "$DBHOST" $DBNAME -c "$@"
